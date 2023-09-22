@@ -1,0 +1,126 @@
+module.exports = async function (context, req) {
+    const latitude = (req.query.latitude || (req.body && req.body.latitude));
+    const longitude = (req.query.longitude || (req.body && req.body.longitude));
+
+
+    const spot = { latitude: latitude, longitude: longitude }; 
+
+    const nearestPoliceStation = findNearestPoliceStation(spot, policeStations);
+    console.log("Nearest police station:", nearestPoliceStation);
+
+    context.res = {
+        // status: 200, /* Defaults to 200 */
+        body: nearestPoliceStation
+    };
+}
+
+// Function to calculate the distance between two GPS coordinates using Haversine formula
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in kilometers
+    return distance;
+  }
+
+// Function to find the nearest police station to a given spot
+function findNearestPoliceStation(spot, policeStations) {
+    let nearestStation = null;
+    let shortestDistance = Infinity;
+  
+    for (const station of policeStations) {
+      const distance = calculateDistance(
+        spot.latitude,
+        spot.longitude,
+        station.latitude,
+        station.longitude
+      );
+  
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        nearestStation = station;
+      }
+    }
+  
+    return nearestStation;
+  }
+  const policeStations = [
+    {
+      division: "SECRETARIAT",
+      station: "St. Clair Police Station",
+      phones: "622-6996, 612-1957",
+      latitude: 10.671082205960623,
+      longitude: -61.523377232414504,
+    },
+    {
+      division: "Northern Division",
+      station: "Maloney Police Station",
+      phones: "646-2947 ext 64016",
+      latitude: 10.619593530471466,
+      longitude: -61.321310944051916,
+    },
+    {
+      division: "Port of Spain Division",
+      station: "Besson Street Police Station",
+      phones: "623-1395 ext 12985",
+      latitude: 10.6502011297044,
+      longitude: -61.5042329305606,
+    },
+    {
+      division: "North Eastern Division",
+      station: "Besson Street Police Station",
+      phones: "623-1395 ext 12985",
+      latitude: 10.6502011297044,
+      longitude: -61.5042329305606,
+    },
+    {
+      division: "Eastern Division",
+      station: "Sangre Grande Police Station",
+      phones: "612-0269 ext 71087",
+      latitude: 10.585794108921098,
+      longitude: -61.12787606310543,
+    },
+    {
+      division: "Western Division",
+      station: "Carenage Police Station",
+      phones: "681-4169",
+      latitude: 10.684420531997494,
+      longitude: -61.59134030357806,
+    },
+    {
+      division: "Central Division",
+      station: "Chaguanas Police Station",
+      phones: "773-7123",
+      latitude: 10.51779647252167,
+      longitude: -61.414385090088274,
+    },
+    {
+      division: "Southern Division",
+      station: "Gasparillo Police Station",
+      phones: "491-6537",
+      latitude: 10.318075296589859,
+      longitude: -61.42562274590827,
+    },
+    {
+      division: "South Western Division",
+      station: "Labrea Police Station",
+      phones: "648-7080",
+      latitude: 10.247948566690358,
+      longitude: -61.62297704776282,
+    },
+    {
+      division: "Tobago Division",
+      station: "Roxborough Police Station",
+      phones: "639-1812 ext 14015",
+      latitude: 11.252337218382767,
+      longitude: -60.582412290082395,
+    },
+    // Add more police stations as needed
+  ];
